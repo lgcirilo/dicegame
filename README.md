@@ -23,3 +23,7 @@ A series of console logs are done to help follow the execution. Those would not 
 ```shell
 mvn test
 ```
+
+## Current limitations
+
+At this point the application fails when the a bonus/minibonus followed by another bonus/minibonus.
