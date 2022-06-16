@@ -1,4 +1,4 @@
-package com.lgcirilo.dicegame;
+package com.lgcirilo.dicegame.interfaces;
 
 public interface Die {
     void roll();

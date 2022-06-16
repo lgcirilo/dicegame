@@ -1,9 +1,12 @@
 package com.lgcirilo.dicegame;
 
 
+import com.lgcirilo.dicegame.interfaces.Die;
+import com.lgcirilo.dicegame.interfaces.Game;
+
 import java.util.Arrays;
 
-public class BoeingGame implements Game{
+public class BoeingGame implements Game {
     int numberOfTurns;
     int numberOfDice;
     BoeingGamePlayer[] boeingGamePlayers;

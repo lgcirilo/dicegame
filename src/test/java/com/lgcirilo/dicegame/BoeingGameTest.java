@@ -1,5 +1,6 @@
 package com.lgcirilo.dicegame;
 
+import com.lgcirilo.dicegame.interfaces.Die;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
