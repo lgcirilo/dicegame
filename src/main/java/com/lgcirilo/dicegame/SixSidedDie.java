@@ -2,10 +2,11 @@ package com.lgcirilo.dicegame;
 
 public class SixSidedDie implements Die {
     private Integer faceValue;
+    private final int numberOfSides = 6;
 
     @Override
     public void roll() {
-        int rolledNumber = (int) Math.floor(Math.random() * 6) + 1;
+        int rolledNumber = (int) Math.floor(Math.random() * numberOfSides) + 1;
         setFaceValue(rolledNumber);
     }
 
@@ -15,6 +16,10 @@ public class SixSidedDie implements Die {
 
     public void setFaceValue(Integer faceValue) {
         this.faceValue = faceValue;
+    }
+
+    public int getNumberOfSides() {
+        return numberOfSides;
     }
 
     @Override

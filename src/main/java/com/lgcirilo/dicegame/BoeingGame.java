@@ -3,83 +3,77 @@ package com.lgcirilo.dicegame;
 
 import java.util.Arrays;
 
-// TODO - can I remove every ocurrence of the parameter Die[] dice?
-// TODO - Unit tests
-// TODO - review for object oriented design and code resusability
-// TODO - write comments
-// TODO - remove all System.out.printlns
 public class BoeingGame implements Game{
     int numberOfTurns;
     int numberOfDice;
-    Player[] players;
+    BoeingGamePlayer[] boeingGamePlayers;
     Die[] dice;
 
-    public BoeingGame(int numberOfTurns, int numberOfDice, Player[] players) {
+    public BoeingGame(int numberOfTurns, int numberOfDice, BoeingGamePlayer[] boeingGamePlayers) {
         this.numberOfTurns = numberOfTurns;
+        this.numberOfDice = numberOfDice;
         dice = new SixSidedDie[numberOfDice];
         for (int i = 0; i < numberOfDice; i++) {
             dice[i] = new SixSidedDie();
         }
-        this.players = players;
+        this.boeingGamePlayers = boeingGamePlayers;
     }
 
-
-    // TODO - check if points score after a bonus or mini bonus are to be computed
+    // Plays the game
     @Override
-    public Player play() {
+    public BoeingGamePlayer play() {
         for (int currentTurn = 1; currentTurn <= numberOfTurns; currentTurn++) {
-            for (Player player: players) {
+            for (BoeingGamePlayer boeingGamePlayer : boeingGamePlayers) {
                 int totalPointsForTurn = 0;
                 do {
                     rollDice();
-                    showRollMessage(player, currentTurn, dice);
-                    if (isMiniBonus(dice, currentTurn, player)) {
+                    showRollMessage(boeingGamePlayer, currentTurn, dice);
+                    if (isMiniBonus(dice, currentTurn, boeingGamePlayer)) {
                         rollDice();
-                        showRollMessage(player, currentTurn, dice);
-                        if(isPointsScored(dice, currentTurn, player)) {
-                            showMiniBonusMessage(player);
+                        showRollMessage(boeingGamePlayer, currentTurn, dice);
+                        if(isPointsScored(dice, currentTurn, boeingGamePlayer)) {
+                            showMiniBonusMessage(boeingGamePlayer);
                             totalPointsForTurn += Constants.MINI_BONUS_POINTS;
                         }
-                    } else if (isBonus(dice, currentTurn, player)) {
+                    } else if (isBonus(dice, currentTurn, boeingGamePlayer)) {
                         rollDice();
-                        showRollMessage(player, currentTurn, dice);
-                        if(isPointsScored(dice, currentTurn, player)) {
-                            showBonusMessage(player);
+                        showRollMessage(boeingGamePlayer, currentTurn, dice);
+                        if(isPointsScored(dice, currentTurn, boeingGamePlayer)) {
+                            showBonusMessage(boeingGamePlayer);
                             totalPointsForTurn += Constants.BONUS_POINTS;
                         }
                     } else {
-                        showPointsScoredMessage(player, dice, currentTurn);
-                        totalPointsForTurn = totalPointsForTurn + computePoints(player, dice, currentTurn);
+                        showPointsScoredMessage(boeingGamePlayer, dice, currentTurn);
+                        totalPointsForTurn = totalPointsForTurn + computePoints(boeingGamePlayer, dice, currentTurn);
                     }
-                } while (!isTurnOver(player, dice, currentTurn));
+                } while (isPointsScored(dice, currentTurn, boeingGamePlayer));
 
-                player.setScore(player.getScore() + totalPointsForTurn);
+                boeingGamePlayer.setScore(boeingGamePlayer.getScore() + totalPointsForTurn);
             }
         }
-        for(Player player: players) {
-            System.out.println(player.toString());
+        for(BoeingGamePlayer boeingGamePlayer : boeingGamePlayers) {
+            System.out.println(boeingGamePlayer.toString());
         }
 
-        // check for winner
-        return winner(players);
+
+        return winner(boeingGamePlayers);
 
     }
 
-    protected boolean isTurnOver(Player player, Die[] dice, int currentTurn) {
-        return computePoints(player, dice, currentTurn) == 0;
+    // Checks whether current turn is over
+    protected boolean isTurnOver(BoeingGamePlayer boeingGamePlayer, Die[] dice, int currentTurn) {
+        return computePoints(boeingGamePlayer, dice, currentTurn) == 0;
     }
 
+    // Rolls all the three dice
     protected void rollDice() {
         for (Die die: dice) {
             die.roll();
         }
     }
 
-    // TODO - turn this method into computePoints returning an int. Set Player's - OK
-    // TODO - score elsewhere (important because the way it is now points are being computed twice.
-    // TODO - Maybe do so in play() method. - OK
-    //  TODO - After each roll considering bonuses and mini bonuses
-    protected int computePoints(Player player, Die[] dice, int currentTurn) {
+    // Computes points for current turn
+    protected int computePoints(BoeingGamePlayer boeingGamePlayer, Die[] dice, int currentTurn) {
         int totalPoints = 0;
         for (Die die: dice) {
             if(die.getFaceValue() == currentTurn) {
@@ -89,6 +83,7 @@ public class BoeingGame implements Game{
         return totalPoints;
     }
 
+    // Checks whether all dice have the saem face value. Useful to check for bonuses and mini bonuses
     protected boolean isRollThreeOfAKind(Die[] dice) {
         int firstDieFaceValue = dice[0].getFaceValue();
         for (int i = 1; i < dice.length; i++) {
@@ -99,70 +94,71 @@ public class BoeingGame implements Game{
         return true;
     }
 
-    protected boolean isMiniBonus(Die[] dice, int currentTurn, Player player) {
+    // Checks whether this roll of dice is a mini bonus
+    protected boolean isMiniBonus(Die[] dice, int currentTurn, BoeingGamePlayer boeingGamePlayer) {
         if (isRollThreeOfAKind(dice) && dice[0].getFaceValue() != currentTurn) {
-            player.setMiniBonusRollsCount(player.getMiniBonusRollsCount() + 1);
+            boeingGamePlayer.increaseMiniBonusRolls();
             return true;
         }
         return false;
     }
 
-    protected boolean isBonus(Die[] dice, int currentTurn, Player player) {
+    // Checks whether this roll of dice is a bonus
+    protected boolean isBonus(Die[] dice, int currentTurn, BoeingGamePlayer boeingGamePlayer) {
         if (isRollThreeOfAKind(dice) && dice[0].getFaceValue() == currentTurn) {
-            player.setBonusRollsCount(player.getBonusRollsCount() + 1);
+            boeingGamePlayer.increaseBonusRolls();
             return true;
         }
 
         return false;
     }
 
-    protected boolean isPointsScored(Die[] dice, int currentTurn, Player player) {
-        return isMiniBonus(dice, currentTurn, player) ||
-                isBonus(dice, currentTurn, player) ||
-                computePoints(player, dice, currentTurn) > 0;
+    // Checks if a point was score according to game definition
+    protected boolean isPointsScored(Die[] dice, int currentTurn, BoeingGamePlayer boeingGamePlayer) {
+        return isMiniBonus(dice, currentTurn, boeingGamePlayer) ||
+                isBonus(dice, currentTurn, boeingGamePlayer) ||
+                computePoints(boeingGamePlayer, dice, currentTurn) > 0;
     }
 
-    // TODO - implement
-
-    protected Player winner(Player[] players) {
-            if (players[0].getScore() > players[1].getScore()) return players[0];
-            if (players[0].getScore() < players[1].getScore()) return players[1];
-            if (players[0].getBonusRollsCount() > players[1].getBonusRollsCount()) return players[0];
-            if (players[0].getBonusRollsCount() < players[1].getBonusRollsCount()) return players[1];
-            if (players[0].getMiniBonusRollsCount() > players[1].getMiniBonusRollsCount()) return players[0];
-            if (players[0].getMiniBonusRollsCount() < players[1].getMiniBonusRollsCount()) return players[1];
-            return tieBreaker(players);
+    // Returns the winner
+    protected BoeingGamePlayer winner(BoeingGamePlayer[] boeingGamePlayers) {
+            if (boeingGamePlayers[0].getScore() > boeingGamePlayers[1].getScore()) return boeingGamePlayers[0];
+            if (boeingGamePlayers[0].getScore() < boeingGamePlayers[1].getScore()) return boeingGamePlayers[1];
+            if (boeingGamePlayers[0].getBonusRollsCount() > boeingGamePlayers[1].getBonusRollsCount()) return boeingGamePlayers[0];
+            if (boeingGamePlayers[0].getBonusRollsCount() < boeingGamePlayers[1].getBonusRollsCount()) return boeingGamePlayers[1];
+            if (boeingGamePlayers[0].getMiniBonusRollsCount() > boeingGamePlayers[1].getMiniBonusRollsCount()) return boeingGamePlayers[0];
+            if (boeingGamePlayers[0].getMiniBonusRollsCount() < boeingGamePlayers[1].getMiniBonusRollsCount()) return boeingGamePlayers[1];
+            return tieBreaker(boeingGamePlayers);
     }
-    protected Player tieBreaker(Player[] players) {
+
+    // Does a tie breaker
+    protected BoeingGamePlayer tieBreaker(BoeingGamePlayer[] boeingGamePlayers) {
         int currentTurn = this.numberOfTurns;
         do {
-            for (Player player: players) {
+            for (BoeingGamePlayer boeingGamePlayer : boeingGamePlayers) {
                 rollDice();
-                player.setScore(player.getScore() + computePoints(player, dice,currentTurn));
+                boeingGamePlayer.setScore(boeingGamePlayer.getScore() + computePoints(boeingGamePlayer, dice,currentTurn));
             }
-            System.out.println(players[0].getScore() +  "    " + players[1].getScore());
-        } while (players[0].getScore() == players[1].getScore());
+        } while (boeingGamePlayers[0].getScore() == boeingGamePlayers[1].getScore());
 
-        System.out.println(players[0].getScore() +  "    " + players[1].getScore());
-
-        return players[0].getScore() > players[1].getScore() ? players[0] : players[1];
+        return boeingGamePlayers[0].getScore() > boeingGamePlayers[1].getScore() ? boeingGamePlayers[0] : boeingGamePlayers[1];
     }
 
-    protected void showRollMessage(Player player, int currentTurn, Die[] dice) {
-        System.out.println(String.format(Messages.ROLL_MESSAGE, player.getName(),
+    protected void showRollMessage(BoeingGamePlayer boeingGamePlayer, int currentTurn, Die[] dice) {
+        System.out.println(String.format(Messages.ROLL_MESSAGE, boeingGamePlayer.getName(),
                 currentTurn,  Arrays.toString(dice)));
     }
 
-    protected void showMiniBonusMessage(Player player) {
-        System.out.println(String.format(Messages.MINI_BONUS_POINTS_AWARDED, player.getName()));
+    protected void showMiniBonusMessage(BoeingGamePlayer boeingGamePlayer) {
+        System.out.println(String.format(Messages.MINI_BONUS_POINTS_AWARDED, boeingGamePlayer.getName()));
     }
 
-    protected void showBonusMessage(Player player) {
-        System.out.println(String.format(Messages.BONUS_POINTS_AWARDED, player.getName()));
+    protected void showBonusMessage(BoeingGamePlayer boeingGamePlayer) {
+        System.out.println(String.format(Messages.BONUS_POINTS_AWARDED, boeingGamePlayer.getName()));
     }
 
-    protected void showPointsScoredMessage(Player player, Die[] dice, int currentTurn) {
+    protected void showPointsScoredMessage(BoeingGamePlayer boeingGamePlayer, Die[] dice, int currentTurn) {
         System.out.println(String.format(Messages.POINTS_SCORED,
-                player.getName(), computePoints(player, dice, currentTurn)));
+                boeingGamePlayer.getName(), computePoints(boeingGamePlayer, dice, currentTurn)));
     }
 }
