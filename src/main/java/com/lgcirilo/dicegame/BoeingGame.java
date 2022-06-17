@@ -28,23 +28,28 @@ public class BoeingGame implements Game {
         for (int currentTurn = 1; currentTurn <= numberOfTurns; currentTurn++) {
             for (BoeingGamePlayer boeingGamePlayer : boeingGamePlayers) {
                 int totalPointsForTurn = 0;
+                boolean lastRollWasMiniBonus = false;
+                boolean lastRollWasbonus = false;
                 do {
                     rollDice();
                     showRollMessage(boeingGamePlayer, currentTurn, dice);
-                    if (isMiniBonus(dice, currentTurn, boeingGamePlayer)) {
-                        rollDice();
-                        showRollMessage(boeingGamePlayer, currentTurn, dice);
+                    if (lastRollWasMiniBonus) {
                         if(isPointsScored(dice, currentTurn, boeingGamePlayer)) {
                             showMiniBonusMessage(boeingGamePlayer);
                             totalPointsForTurn += Constants.MINI_BONUS_POINTS;
                         }
-                    } else if (isBonus(dice, currentTurn, boeingGamePlayer)) {
-                        rollDice();
-                        showRollMessage(boeingGamePlayer, currentTurn, dice);
+                        lastRollWasMiniBonus = false;
+                    } else if (lastRollWasbonus) {
                         if(isPointsScored(dice, currentTurn, boeingGamePlayer)) {
                             showBonusMessage(boeingGamePlayer);
                             totalPointsForTurn += Constants.BONUS_POINTS;
                         }
+                        lastRollWasbonus = false;
+                    }
+                    if (isMiniBonus(dice, currentTurn, boeingGamePlayer)) {
+                        lastRollWasMiniBonus = true;
+                    } else if (isBonus(dice, currentTurn, boeingGamePlayer)) {
+                        lastRollWasbonus = true;
                     } else {
                         showPointsScoredMessage(boeingGamePlayer, dice, currentTurn);
                         totalPointsForTurn = totalPointsForTurn + computePoints(boeingGamePlayer, dice, currentTurn);
