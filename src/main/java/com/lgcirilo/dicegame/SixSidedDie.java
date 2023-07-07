@@ -1,7 +1,9 @@
 package com.lgcirilo.dicegame;
 
 import com.lgcirilo.dicegame.interfaces.Die;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SixSidedDie implements Die {
     private Integer faceValue;
     private final int numberOfSides = 6;

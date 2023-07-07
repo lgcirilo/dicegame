@@ -33,6 +33,8 @@ public class BoeingGame implements Game {
                 do {
                     rollDice();
                     showRollMessage(boeingGamePlayer, currentTurn, dice);
+
+                    // Computes points if last roll was a bonus or mini bonus
                     if (lastRollWasMiniBonus) {
                         if(isPointsScored(dice, currentTurn, boeingGamePlayer)) {
                             showMiniBonusMessage(boeingGamePlayer);
@@ -46,9 +48,13 @@ public class BoeingGame implements Game {
                         }
                         lastRollWasbonus = false;
                     }
+
+                    // Addresses current roll
                     if (isMiniBonus(dice, currentTurn, boeingGamePlayer)) {
+                        boeingGamePlayer.increaseMiniBonusRolls();
                         lastRollWasMiniBonus = true;
                     } else if (isBonus(dice, currentTurn, boeingGamePlayer)) {
+                        boeingGamePlayer.increaseBonusRolls();
                         lastRollWasbonus = true;
                     } else {
                         showPointsScoredMessage(boeingGamePlayer, dice, currentTurn);
@@ -59,6 +65,7 @@ public class BoeingGame implements Game {
                 boeingGamePlayer.setScore(boeingGamePlayer.getScore() + totalPointsForTurn);
             }
         }
+
         for(BoeingGamePlayer boeingGamePlayer : boeingGamePlayers) {
             System.out.println(boeingGamePlayer.toString());
         }
@@ -105,7 +112,6 @@ public class BoeingGame implements Game {
     // Checks whether this roll of dice is a mini bonus
     protected boolean isMiniBonus(Die[] dice, int currentTurn, BoeingGamePlayer boeingGamePlayer) {
         if (isRollThreeOfAKind(dice) && dice[0].getFaceValue() != currentTurn) {
-            boeingGamePlayer.increaseMiniBonusRolls();
             return true;
         }
         return false;
@@ -114,7 +120,6 @@ public class BoeingGame implements Game {
     // Checks whether this roll of dice is a bonus
     protected boolean isBonus(Die[] dice, int currentTurn, BoeingGamePlayer boeingGamePlayer) {
         if (isRollThreeOfAKind(dice) && dice[0].getFaceValue() == currentTurn) {
-            boeingGamePlayer.increaseBonusRolls();
             return true;
         }
 

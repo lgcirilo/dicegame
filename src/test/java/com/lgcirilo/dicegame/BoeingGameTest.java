@@ -203,7 +203,9 @@ class BoeingGameTest {
         boeingGamePlayers[0].setBonusRollsCount(0);
         boeingGamePlayers[1].setBonusRollsCount(0);
         bg.tieBreaker(boeingGamePlayers);
-        assertNotEquals(boeingGamePlayers[0].getScore(), boeingGamePlayers[1].getScore());
+        Integer player0Score = boeingGamePlayers[0].getScore();
+        Integer player1Score = boeingGamePlayers[1].getScore();
+        assertNotEquals(player0Score, player1Score);
     }
 
     @Test
