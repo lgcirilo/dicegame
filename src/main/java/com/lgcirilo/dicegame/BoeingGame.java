@@ -15,11 +15,11 @@ public class BoeingGame implements Game {
     public BoeingGame(int numberOfTurns, int numberOfDice, BoeingGamePlayer[] boeingGamePlayers) {
         this.numberOfTurns = numberOfTurns;
         this.numberOfDice = numberOfDice;
+        this.boeingGamePlayers = boeingGamePlayers;
         dice = new SixSidedDie[numberOfDice];
         for (int i = 0; i < numberOfDice; i++) {
             dice[i] = new SixSidedDie();
         }
-        this.boeingGamePlayers = boeingGamePlayers;
     }
 
     // Plays the game

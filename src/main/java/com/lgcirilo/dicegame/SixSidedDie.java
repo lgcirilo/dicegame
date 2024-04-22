@@ -12,19 +12,21 @@ public class SixSidedDie implements Die {
         setFaceValue(rolledNumber);
     }
 
+    @Override
     public Integer getFaceValue() {
         return faceValue;
     }
 
+    @Override
     public void setFaceValue(Integer faceValue) {
         this.faceValue = faceValue;
     }
 
+    @Override
     public int getNumberOfSides() {
         return numberOfSides;
     }
 
-    @Override
     public String toString() {
         return String.valueOf(faceValue);
     }
